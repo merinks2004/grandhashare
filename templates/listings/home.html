@@ -3,7 +3,7 @@
 {% block title %}GrandhaShare - Buy, swap or donate textbooks across Kerala{% endblock %}
 
 {% block content %}
-<div class="p-5 mb-4 bg-light rounded-3 text-center">
+<div class="hero p-5 mb-4 text-center">
     <h1 class="display-5 fw-bold">Buy, swap or donate textbooks across Kerala</h1>
     <p class="lead">Find the right book for your university, course and semester.</p>
     {% if not user.is_authenticated %}
@@ -15,7 +15,7 @@
 <div class="row g-3">
     {% for book in latest %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100">
+            <div class="card book-card h-100">
                 <div class="card-body">
                     <h5 class="card-title">{{ book.title }}</h5>
                     <p class="card-text text-muted mb-1">by {{ book.author }}</p>
