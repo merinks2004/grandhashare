@@ -1,7 +1,6 @@
 from django import forms
 
-from .models import Listing
-
+from .models import Course, Listing, University
 
 class ListingForm(forms.ModelForm):
     class Meta:
@@ -30,3 +29,38 @@ class ListingForm(forms.ModelForm):
         else:
             cleaned["price"] = 0
         return cleaned
+
+class ListingFilterForm(forms.Form):
+    q = forms.CharField(
+        required=False, label="Search",
+        widget=forms.TextInput(attrs={"placeholder": "Title, author or subject"}),
+    )
+    university = forms.ModelChoiceField(
+        queryset=University.objects.all(), required=False,
+        empty_label="All universities",
+    )
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.select_related("university"), required=False,
+        empty_label="All courses",
+    )
+    semester = forms.TypedChoiceField(
+        choices=[("", "Any semester")] + Listing.SEMESTER_CHOICES,
+        coerce=int, empty_value=None, required=False,
+    )
+    condition = forms.ChoiceField(
+        choices=[("", "Any condition")] + Listing.CONDITION_CHOICES, required=False,
+    )
+    listing_type = forms.ChoiceField(
+        choices=[("", "Any type")] + Listing.TYPE_CHOICES, required=False,
+        label="Type",
+    )
+    min_price = forms.DecimalField(required=False, min_value=0, label="Min price")
+    max_price = forms.DecimalField(required=False, min_value=0, label="Max price")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.Select):
+                field.widget.attrs["class"] = "form-select"
+            else:
+                field.widget.attrs["class"] = "form-control"
