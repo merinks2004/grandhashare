@@ -98,3 +98,39 @@ def listing_list(request):
         request, "listings/listing_list.html",
         {"form": form, "page_obj": page_obj, "querystring": params.urlencode()},
     )
+
+@login_required
+def my_listings(request):
+    listings = (
+        Listing.objects.filter(seller=request.user)
+        .select_related("course__university")
+        .prefetch_related("images")
+    )
+    return render(request, "listings/my_listings.html", {"listings": listings})
+
+
+@login_required
+def edit_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if request.method == "POST":
+        form = ListingForm(request.POST, instance=listing)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your listing has been updated.")
+            return redirect("listing_detail", pk=listing.pk)
+    else:
+        form = ListingForm(instance=listing)
+    return render(
+        request, "listings/add_listing.html",
+        {"form": form, "editing": True, "listing": listing},
+    )
+
+
+@login_required
+def delete_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if request.method == "POST":
+        listing.delete()
+        messages.success(request, "Your listing has been deleted.")
+        return redirect("my_listings")
+    return render(request, "listings/delete_listing.html", {"listing": listing})
