@@ -8,6 +8,7 @@ from .forms import ListingFilterForm, ListingForm
 from .models import BookImage, Listing
 
 MAX_IMAGES = 4
+MAX_IMAGE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 
 def home(request):
@@ -28,6 +29,8 @@ def add_listing(request):
             image_error = f"You can upload at most {MAX_IMAGES} photos."
         elif any(not img.content_type.startswith("image/") for img in images):
             image_error = "Only image files are allowed."
+        elif any(img.size > MAX_IMAGE_SIZE for img in images):
+            image_error = "Each photo must be 2 MB or smaller."
 
         if form.is_valid() and not image_error:
             listing = form.save(commit=False)
