@@ -1,0 +1,22 @@
+<div class="col-md-6 col-lg-4">
+    <div class="card book-card h-100">
+        <a href="{% url 'listing_detail' book.pk %}" class="stretched-link"></a>
+        {% with cover=book.images.all.0 %}
+            {% if cover %}
+                <img src="{{ cover.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ book.title }}">
+            {% endif %}
+        {% endwith %}
+        <div class="card-body">
+            <h5 class="card-title">{{ book.title }}</h5>
+            <p class="card-text text-muted mb-1">by {{ book.author }}</p>
+            <p class="card-text small mb-2">
+                {{ book.course }} &middot; Sem {{ book.semester }}
+            </p>
+            <span class="badge text-bg-secondary">{{ book.get_condition_display }}</span>
+            <span class="badge text-bg-info">{{ book.get_listing_type_display }}</span>
+        </div>
+        <div class="card-footer fw-bold">
+            {% if book.listing_type == "sell" %}₹{{ book.price }}{% elif book.listing_type == "swap" %}Swap{% else %}Free{% endif %}
+        </div>
+    </div>
+</div>
