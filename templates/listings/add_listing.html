@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Add a book - GrandhaShare{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <h2 class="mb-3">Add a book</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+                {% for field in form %}
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            {% for error in form.non_field_errors %}
+                <div class="text-danger small mb-2">{{ error }}</div>
+            {% endfor %}
+
+            <div class="mb-3">
+                <label class="form-label" for="images">Photos (up to 4)</label>
+                <input type="file" name="images" id="images" class="form-control" accept="image/*" multiple>
+                {% if image_error %}
+                    <div class="text-danger small">{{ image_error }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Post book</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
