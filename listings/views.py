@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import ListingForm
 from .models import BookImage, Listing
@@ -40,4 +40,16 @@ def add_listing(request):
     return render(
         request, "listings/add_listing.html",
         {"form": form, "image_error": image_error},
+    )
+
+
+def listing_detail(request, pk):
+    listing = get_object_or_404(
+        Listing.objects.select_related("course__university", "seller"),
+        pk=pk,
+    )
+    images = listing.images.all()
+    return render(
+        request, "listings/listing_detail.html",
+        {"listing": listing, "images": images},
     )

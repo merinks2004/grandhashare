@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ listing.title }} - GrandhaShare{% endblock %}
+
+{% block content %}
+<a href="{% url 'home' %}" class="text-decoration-none small">&larr; Back to books</a>
+
+<div class="row g-4 mt-1">
+    <div class="col-md-6">
+        {% if images %}
+            <div id="photos" class="carousel slide">
+                <div class="carousel-inner rounded-4 shadow-sm">
+                    {% for img in images %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ img.image.url }}" class="d-block w-100" style="max-height: 420px; object-fit: contain; background: #fff;" alt="{{ listing.title }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#photos" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#photos" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="d-flex align-items-center justify-content-center bg-white rounded-4 shadow-sm text-muted" style="height: 300px;">
+                <div class="text-center"><i class="bi bi-book fs-1"></i><p class="mb-0">No photo added</p></div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-6">
+        <h2>{{ listing.title }}</h2>
+        <p class="text-muted">by {{ listing.author }}{% if listing.edition %} &middot; {{ listing.edition }} edition{% endif %}</p>
+        <h3 class="text-success">
+            {% if listing.listing_type == "sell" %}₹{{ listing.price }}{% elif listing.listing_type == "swap" %}Swap{% else %}Free{% endif %}
+        </h3>
+        <p>
+            <span class="badge text-bg-secondary">{{ listing.get_condition_display }}</span>
+            <span class="badge text-bg-info">{{ listing.get_listing_type_display }}</span>
+            <span class="badge text-bg-warning">{{ listing.get_status_display }}</span>
+        </p>
+        <ul class="list-unstyled">
+            <li><strong>University:</strong> {{ listing.course.university.name }}</li>
+            <li><strong>Course:</strong> {{ listing.course.name }}</li>
+            <li><strong>Semester:</strong> {{ listing.semester }}</li>
+            <li><strong>Subject:</strong> {{ listing.subject }}</li>
+            <li><strong>Posted by:</strong> {{ listing.seller.username }} on {{ listing.date_posted|date:"d M Y" }}</li>
+        </ul>
+        {% if listing.description %}
+            <p>{{ listing.description|linebreaks }}</p>
+        {% endif %}
+        <div class="alert alert-light border small">
+            <i class="bi bi-shield-check"></i> Tip: meet in a public place on campus.
+        </div>
+    </div>
+</div>
+{% endblock %}

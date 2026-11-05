@@ -16,6 +16,12 @@
     {% for book in latest %}
         <div class="col-md-6 col-lg-4">
             <div class="card book-card h-100">
+               <a href="{% url 'listing_detail' book.pk %}" class="stretched-link"></a>
+               {% with cover=book.images.first %}
+                   {% if cover %}
+                      <img src="{{ cover.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ book.title }}">
+                   {% endif %}
+               {% endwith %}
                 <div class="card-body">
                     <h5 class="card-title">{{ book.title }}</h5>
                     <p class="card-text text-muted mb-1">by {{ book.author }}</p>
