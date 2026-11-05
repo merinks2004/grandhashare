@@ -11,13 +11,18 @@
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container">
             <a class="navbar-brand" href="/"><i class="bi bi-book-half me-2"></i>GrandhaShare</a>
-            <div class="ms-auto">
-                {% if user.is_authenticated %}
-                    <span class="navbar-text">Hi, {{ user.username }}</span>
-                {% else %}
-                    <a class="btn btn-outline-light btn-sm" href="{% url 'signup' %}">Sign up</a>
-                {% endif %}
-            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+              {% if user.is_authenticated %}
+                 <span class="navbar-text me-2">Hi, {{ user.username }}</span>
+                 <form method="post" action="{% url 'logout' %}" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-light btn-sm">Log out</button>
+                 </form>
+              {% else %}
+                <a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Log in</a>
+                <a class="btn btn-light btn-sm" href="{% url 'signup' %}">Sign up</a>
+              {% endif %}
+           </div>
         </div>
     </nav>
 
