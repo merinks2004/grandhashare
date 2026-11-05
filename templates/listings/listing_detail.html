@@ -53,6 +53,12 @@
         {% if listing.description %}
             <p>{{ listing.description|linebreaks }}</p>
         {% endif %}
+        {% if user == listing.seller %}
+          <div class="mb-3">
+            <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+            <a href="{% url 'delete_listing' listing.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
+          </div>
+       {% endif %}
         <div class="alert alert-light border small">
             <i class="bi bi-shield-check"></i> Tip: meet in a public place on campus.
         </div>
