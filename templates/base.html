@@ -10,7 +10,7 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-dark navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/"><i class="bi bi-book-half me-2"></i>GrandhaShare</a>
+            <a class="navbar-brand" href="{% url 'home' %}"><i class="bi bi-book-half me-2"></i>GrandhaShare</a>
             <div class="ms-auto d-flex align-items-center gap-2">
               {% if user.is_authenticated %}
                  <span class="navbar-text me-2">Hi, {{ user.username }}</span>

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}GrandhaShare - Buy, swap or donate textbooks across Kerala{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-light rounded-3 text-center">
+    <h1 class="display-5 fw-bold">Buy, swap or donate textbooks across Kerala</h1>
+    <p class="lead">Find the right book for your university, course and semester.</p>
+    {% if not user.is_authenticated %}
+        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Get started</a>
+    {% endif %}
+</div>
+
+<h3 class="mb-3">Latest books</h3>
+<div class="row g-3">
+    {% for book in latest %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text text-muted mb-1">by {{ book.author }}</p>
+                    <p class="card-text small mb-2">
+                        {{ book.course }} &middot; Sem {{ book.semester }}
+                    </p>
+                    <span class="badge text-bg-secondary">{{ book.get_condition_display }}</span>
+                    <span class="badge text-bg-info">{{ book.get_listing_type_display }}</span>
+                </div>
+                <div class="card-footer fw-bold">
+                    {% if book.listing_type == "sell" %}₹{{ book.price }}{% else %}Free{% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p class="text-muted">No books yet. Be the first to post one!</p>
+    {% endfor %}
+</div>
+{% endblock %}

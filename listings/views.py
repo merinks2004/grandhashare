@@ -1,3 +1,10 @@
 from django.shortcuts import render
 
-# Create your views here.
+from .models import Listing
+
+
+def home(request):
+    latest = Listing.objects.filter(status="available").select_related(
+        "course__university"
+    )[:6]
+    return render(request, "listings/home.html", {"latest": latest})
