@@ -59,6 +59,17 @@
             <a href="{% url 'delete_listing' listing.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
           </div>
        {% endif %}
+       {% if user != listing.seller %}
+          <div class="mb-3">
+             {% if user_request %}
+                <span class="badge text-bg-secondary fs-6">Your request: {{ user_request.get_status_display }}</span>
+             {% elif listing.status == "available" %}
+                <a href="{% url 'request_book' listing.pk %}" class="btn btn-primary"><i class="bi bi-send"></i> Request this book</a>
+             {% else %}
+                <span class="text-muted">This book is no longer available.</span>
+             {% endif %}
+          </div>
+        {% endif %}
         <div class="alert alert-light border small">
             <i class="bi bi-shield-check"></i> Tip: meet in a public place on campus.
         </div>

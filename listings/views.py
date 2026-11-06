@@ -54,9 +54,12 @@ def listing_detail(request, pk):
         pk=pk,
     )
     images = listing.images.all()
+    user_request = None
+    if request.user.is_authenticated:
+        user_request = listing.requests.filter(requester=request.user).first()
     return render(
         request, "listings/listing_detail.html",
-        {"listing": listing, "images": images},
+        {"listing": listing, "images": images, "user_request": user_request},
     )
 
 
