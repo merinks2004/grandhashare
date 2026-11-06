@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import BookRequest
+
+admin.site.register(BookRequest)
