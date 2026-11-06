@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import ListingFilterForm, ListingForm
 from .models import BookImage, Listing
@@ -140,3 +141,29 @@ def delete_listing(request, pk):
         messages.success(request, "Your listing has been deleted.")
         return redirect("my_listings")
     return render(request, "listings/delete_listing.html", {"listing": listing})
+
+@login_required
+@require_POST
+def complete_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if listing.status != "reserved":
+        messages.error(request, "Only a reserved book can be marked as completed.")
+    else:
+        listing.status = "sold"
+        listing.save()
+        messages.success(request, "Marked as completed. Well done!")
+    return redirect("my_listings")
+
+
+@login_required
+@require_POST
+def reopen_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk, seller=request.user)
+    if listing.status != "reserved":
+        messages.error(request, "Only a reserved book can be reopened.")
+    else:
+        listing.requests.filter(status="accepted").update(status="rejected")
+        listing.status = "available"
+        listing.save()
+        messages.success(request, "The book is available again.")
+    return redirect("my_listings")

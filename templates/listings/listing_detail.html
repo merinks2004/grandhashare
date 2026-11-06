@@ -41,7 +41,11 @@
         <p>
             <span class="badge text-bg-secondary">{{ listing.get_condition_display }}</span>
             <span class="badge text-bg-info">{{ listing.get_listing_type_display }}</span>
-            <span class="badge text-bg-warning">{{ listing.get_status_display }}</span>
+            {% if listing.status == "sold" %}
+                <span class="badge text-bg-success">{% if listing.listing_type == "sell" %}Sold{% elif listing.listing_type == "swap" %}Swapped{% else %}Donated{% endif %}</span>
+            {% else %}
+                <span class="badge text-bg-warning">{{ listing.get_status_display }}</span>
+            {% endif %}
         </p>
         <ul class="list-unstyled">
             <li><strong>University:</strong> {{ listing.course.university.name }}</li>
