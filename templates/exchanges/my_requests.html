@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}My requests - GrandhaShare{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">My requests</h2>
+
+{% for r in requests %}
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+                <div>
+                    <h5 class="mb-1">
+                        <a href="{% url 'listing_detail' r.listing.pk %}" class="text-decoration-none">{{ r.listing.title }}</a>
+                    </h5>
+                    <p class="mb-1 small text-muted">
+                        Seller: <strong>{{ r.listing.seller.username }}</strong> &middot; Sent {{ r.date|date:"d M Y" }}
+                    </p>
+                </div>
+                <div>
+                    {% if r.status == "pending" %}
+                        <span class="badge text-bg-warning">Pending</span>
+                    {% elif r.status == "accepted" %}
+                        <span class="badge text-bg-success">Accepted</span>
+                    {% else %}
+                        <span class="badge text-bg-secondary">Rejected</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if r.status == "accepted" %}
+                <div class="alert alert-success mt-2 mb-0 small">
+                    <strong>Seller contact:</strong>
+                    {{ r.listing.seller.profile.phone }} &middot; {{ r.listing.seller.email }}
+                    <br>{{ r.listing.seller.profile.college }}
+                    <br><span class="text-muted">Meet in a public place on campus.</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p class="text-muted">You haven't requested any books yet. <a href="{% url 'listing_list' %}">Browse books</a>.</p>
+{% endfor %}
+{% endblock %}

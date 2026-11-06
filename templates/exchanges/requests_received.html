@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Requests received - GrandhaShare{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Requests received</h2>
+
+{% for r in requests %}
+    <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+                <div>
+                    <h5 class="mb-1">
+                        <a href="{% url 'listing_detail' r.listing.pk %}" class="text-decoration-none">{{ r.listing.title }}</a>
+                    </h5>
+                    <p class="mb-1 small text-muted">
+                        From <strong>{{ r.requester.username }}</strong> &middot; {{ r.date|date:"d M Y" }}
+                    </p>
+                    {% if r.message %}
+                        <p class="mb-2">"{{ r.message }}"</p>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if r.status == "pending" %}
+                        <span class="badge text-bg-warning">Pending</span>
+                    {% elif r.status == "accepted" %}
+                        <span class="badge text-bg-success">Accepted</span>
+                    {% else %}
+                        <span class="badge text-bg-secondary">Rejected</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if r.status == "pending" %}
+                <form method="post" action="{% url 'respond_request' r.pk %}" class="mt-2">
+                    {% csrf_token %}
+                    <button name="action" value="accept" class="btn btn-primary btn-sm">Accept</button>
+                    <button name="action" value="reject" class="btn btn-outline-danger btn-sm">Reject</button>
+                </form>
+            {% elif r.status == "accepted" %}
+                <div class="alert alert-success mt-2 mb-0 small">
+                    <strong>Buyer contact:</strong>
+                    {{ r.requester.profile.phone }} &middot; {{ r.requester.email }}
+                    <br>{{ r.requester.profile.college }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p class="text-muted">No requests yet. When someone requests your book, it will appear here.</p>
+{% endfor %}
+{% endblock %}
