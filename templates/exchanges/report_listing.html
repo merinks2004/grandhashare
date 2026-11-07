@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Report {{ listing.title }} - GrandhaShare{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <a href="{% url 'listing_detail' listing.pk %}" class="text-decoration-none small">&larr; Back to book</a>
+        <div class="card border-0 shadow-sm mt-2">
+            <div class="card-body p-4">
+                <h4 class="mb-1">Report this listing</h4>
+                <p class="text-muted">{{ listing.title }}</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.reason.id_for_label }}">Reason</label>
+                        {{ form.reason }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.details.id_for_label }}">Details</label>
+                        {{ form.details }}
+                    </div>
+                    <button type="submit" class="btn btn-danger">Submit report</button>
+                    <a href="{% url 'listing_detail' listing.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

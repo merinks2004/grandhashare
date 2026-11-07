@@ -4,8 +4,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from listings.models import Listing
 
-from .forms import RequestForm
-from .models import BookRequest
+from .forms import ReportForm, RequestForm
+from .models import BookRequest, Report
 from django.views.decorators.http import require_POST
 
 
@@ -87,4 +87,35 @@ def respond_request(request, pk):
         messages.error(request, "Invalid action.")
 
     return redirect("requests_received")
+
+
+
+@login_required
+def report_listing(request, pk):
+    listing = get_object_or_404(Listing, pk=pk)
+
+    if listing.seller == request.user:
+        messages.error(request, "You can't report your own book.")
+        return redirect("listing_detail", pk=pk)
+
+    if Report.objects.filter(listing=listing, reported_by=request.user).exists():
+        messages.info(request, "You have already reported this book.")
+        return redirect("listing_detail", pk=pk)
+
+    if request.method == "POST":
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.listing = listing
+            report.reported_by = request.user
+            report.save()
+            messages.success(request, "Thank you. We will review this listing.")
+            return redirect("listing_detail", pk=pk)
+    else:
+        form = ReportForm()
+
+    return render(
+        request, "exchanges/report_listing.html",
+        {"form": form, "listing": listing},
+    )
 

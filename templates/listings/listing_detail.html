@@ -76,6 +76,9 @@
         {% endif %}
         <div class="alert alert-light border small">
             <i class="bi bi-shield-check"></i> Tip: meet in a public place on campus.
+            {% if user != listing.seller %}
+               <a href="{% url 'report_listing' listing.pk %}" class="text-danger small text-decoration-none"><i class="bi bi-flag"></i> Report this listing</a>
+            {% endif %}
         </div>
     </div>
 </div>
