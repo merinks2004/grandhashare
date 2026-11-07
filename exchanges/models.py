@@ -32,3 +32,34 @@ class BookRequest(models.Model):
 
     def __str__(self):
         return f"{self.requester.username} -> {self.listing.title} ({self.status})"
+
+
+class Report(models.Model):
+    REASON_CHOICES = [
+        ("spam", "Spam or fake listing"),
+        ("wrong", "Wrong or misleading details"),
+        ("inappropriate", "Inappropriate content"),
+        ("other", "Other"),
+    ]
+
+    listing = models.ForeignKey(
+        Listing, on_delete=models.CASCADE, related_name="reports"
+    )
+    reported_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reports_made"
+    )
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES)
+    details = models.TextField(blank=True)
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-date"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["listing", "reported_by"],
+                name="one_report_per_user_per_listing",
+            )
+        ]
+
+    def __str__(self):
+        return f"Report on {self.listing.title} by {self.reported_by.username}"
