@@ -1,23 +1,42 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Count, Q
+from django.contrib.auth.models import User
+
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from .forms import ListingFilterForm, ListingForm
-from .models import BookImage, Listing
-
+from .models import BookImage, Course, Listing, University
 MAX_IMAGES = 4
 MAX_IMAGE_SIZE = 2 * 1024 * 1024  # 2 MB
 
 
 def home(request):
-    latest = Listing.objects.filter(status="available").select_related(
-        "course__university"
-    )[:6]
-    return render(request, "listings/home.html", {"latest": latest})
-
+    available = Listing.objects.filter(status="available")
+    latest = available.select_related("course__university", "seller").prefetch_related(
+        "images"
+    )[:8]
+    universities = (
+        University.objects.annotate(
+            book_count=Count(
+                "courses__listings", filter=Q(courses__listings__status="available")
+            )
+        )
+        .filter(book_count__gt=0)
+        .order_by("-book_count", "name")[:8]
+    )
+    stats = {
+        "books": available.count(),
+        "universities": University.objects.count(),
+        "courses": Course.objects.count(),
+        "students": User.objects.exclude(username__startswith="demo_").count(),
+    }
+    return render(
+        request, "listings/home.html",
+        {"latest": latest, "universities": universities, "stats": stats},
+    )
 
 @login_required
 def add_listing(request):

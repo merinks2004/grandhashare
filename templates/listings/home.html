@@ -3,23 +3,82 @@
 {% block title %}GrandhaShare - Buy, swap or donate textbooks across Kerala{% endblock %}
 
 {% block content %}
-<div class="hero p-5 mb-4 text-center">
+<section class="hero p-4 p-md-5 mb-4 text-center">
     <h1 class="display-5 fw-bold">Buy, swap or donate textbooks across Kerala</h1>
-    <p class="lead">Find the right book for your university, course and semester.</p>
+    <p class="lead mb-4">Find the right book for your university, course and semester.</p>
+    <form method="get" action="{% url 'listing_list' %}" class="row g-2 justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="input-group input-group-lg">
+                <input type="text" name="q" class="form-control" placeholder="Search by title, author or subject">
+                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Search</button>
+            </div>
+        </div>
+    </form>
+    <p class="small text-muted mt-3 mb-0">No login needed to browse. Log in only to post or request a book.</p>
     {% if not user.is_authenticated %}
-        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Get started</a>
+        <a class="btn btn-warning mt-3" href="{% url 'signup' %}">Join GrandhaShare</a>
     {% endif %}
-</div>
+</section>
 
-<h3 class="mb-3">Latest books</h3>
-<div class="row g-3">
-    {% for book in latest %}
-        {% include "listings/_book_card.html" %}
-    {% empty %}
-        <p class="text-muted">No books yet. Be the first to post one!</p>
-    {% endfor %}
-</div>
-<div class="text-center mt-4">
-    <a href="{% url 'listing_list' %}" class="btn btn-outline-primary">Browse all books</a>
-</div>
+<section class="row text-center g-3 mb-5">
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.books }}</div>Books available</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.universities }}</div>Universities</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.courses }}</div>Courses</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.students }}</div>Students joined</div></div>
+</section>
+
+<section class="mb-5">
+    <h3 class="mb-3">Browse by university</h3>
+    <div class="row g-3">
+        {% for u in universities %}
+            <div class="col-6 col-md-4 col-lg-3">
+                <a href="{% url 'listing_list' %}?university={{ u.pk }}" class="uni-card d-block text-decoration-none">
+                    <i class="bi bi-mortarboard fs-3"></i>
+                    <div class="fw-semibold mt-1">{{ u.name }}</div>
+                    <div class="small text-muted">{{ u.book_count }} book{{ u.book_count|pluralize }}</div>
+                </a>
+            </div>
+        {% empty %}
+            <p class="text-muted">Universities will appear here once books are posted.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="mb-0">Latest books</h3>
+        <a href="{% url 'listing_list' %}" class="text-decoration-none">See all &rarr;</a>
+    </div>
+    <div class="row g-3">
+        {% for book in latest %}
+            {% include "listings/_book_card.html" %}
+        {% empty %}
+            <p class="text-muted">No books yet. Be the first to post one!</p>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'listing_list' %}" class="btn btn-outline-primary">Browse all books</a>
+    </div>
+</section>
+
+<section class="mb-4">
+    <h3 class="text-center mb-4">How it works</h3>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="step-icon"><i class="bi bi-search"></i></div>
+            <h5 class="mt-3">1. Find your book</h5>
+            <p class="text-muted">Filter by university, course and semester to see exactly the books you need.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-icon"><i class="bi bi-send"></i></div>
+            <h5 class="mt-3">2. Send a request</h5>
+            <p class="text-muted">Log in and message the seller. They accept or reject your request.</p>
+        </div>
+        <div class="col-md-4">
+            <div class="step-icon"><i class="bi bi-people"></i></div>
+            <h5 class="mt-3">3. Meet on campus</h5>
+            <p class="text-muted">After acceptance you see the seller's contact. Meet in a public place on campus.</p>
+        </div>
+    </div>
+</section>
 {% endblock %}
