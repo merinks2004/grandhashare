@@ -4,6 +4,8 @@
         {% with cover=book.images.all.0 %}
             {% if cover %}
                 <img src="{{ cover.image.url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ book.title }}">
+            {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light text-muted" style="height: 180px;"><i class="bi bi-book fs-1"></i></div>
             {% endif %}
         {% endwith %}
         <div class="card-body">
@@ -14,6 +16,7 @@
             </p>
             <span class="badge text-bg-secondary">{{ book.get_condition_display }}</span>
             <span class="badge text-bg-info">{{ book.get_listing_type_display }}</span>
+            {% if book.seller.username|slice:":5" == "demo_" %}<span class="badge text-bg-dark">Demo</span>{% endif %}
         </div>
         <div class="card-footer fw-bold">
             {% if book.listing_type == "sell" %}₹{{ book.price }}{% elif book.listing_type == "swap" %}Swap{% else %}Free{% endif %}
