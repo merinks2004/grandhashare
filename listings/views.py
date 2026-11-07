@@ -33,9 +33,19 @@ def home(request):
         "courses": Course.objects.count(),
         "students": User.objects.exclude(username__startswith="demo_").count(),
     }
+
+    subjects = [
+        {"label": "Mathematics", "icon": "bi-calculator"},
+        {"label": "Programming", "icon": "bi-code-slash"},
+        {"label": "Electronics", "icon": "bi-cpu"},
+        {"label": "Accounting", "icon": "bi-cash-coin"},
+        {"label": "Anatomy", "icon": "bi-heart-pulse"},
+        {"label": "Law", "icon": "bi-bank"},
+    ]
+
     return render(
         request, "listings/home.html",
-        {"latest": latest, "universities": universities, "stats": stats},
+        {"latest": latest, "universities": universities, "stats": stats, "subjects": subjects},
     )
 
 @login_required

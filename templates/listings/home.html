@@ -47,6 +47,20 @@
 </section>
 
 <section class="mb-5">
+    <h3 class="mb-3">Popular subjects</h3>
+    <div class="row g-3">
+        {% for s in subjects %}
+            <div class="col-6 col-md-4 col-lg-2">
+                <a href="{% url 'listing_list' %}?q={{ s.label|urlencode }}" class="subject-tile d-block text-decoration-none text-center">
+                    <i class="bi {{ s.icon }}"></i>
+                    <div class="small fw-semibold mt-2">{{ s.label }}</div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="mb-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">Latest books</h3>
         <a href="{% url 'listing_list' %}" class="text-decoration-none">See all &rarr;</a>
@@ -83,4 +97,17 @@
         </div>
     </div>
 </section>
+
+<section class="give-banner p-4 p-md-5 mb-4">
+    <div class="row align-items-center g-3">
+        <div class="col-md-8">
+            <h3 class="mb-2">Give your old books a new home.</h3>
+            <p class="mb-0">Someone else might need the books sitting on your shelf. Sell, swap or donate them in two minutes.</p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'add_listing' %}" class="btn btn-warning btn-lg">List a book <i class="bi bi-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
