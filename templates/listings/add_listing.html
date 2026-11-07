@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}{% if editing %}Edit book{% else %}Add a book{% endif %} - GrandhaShare{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
@@ -21,17 +22,17 @@
             {% for error in form.non_field_errors %}
                 <div class="text-danger small mb-2">{{ error }}</div>
             {% endfor %}
-            {% if not editing %}
 
             {% if not editing %}
             <div class="mb-3">
-                <label class="form-label" for="images">Photos (up to 4)</label>
+                <label class="form-label" for="images">Photos (up to 4, max 2 MB each)</label>
                 <input type="file" name="images" id="images" class="form-control" accept="image/*" multiple>
                 {% if image_error %}
                     <div class="text-danger small">{{ image_error }}</div>
                 {% endif %}
             </div>
             {% endif %}
+
             <button type="submit" class="btn btn-primary">{% if editing %}Save changes{% else %}Post book{% endif %}</button>
         </form>
     </div>

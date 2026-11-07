@@ -3,21 +3,23 @@
 {% block title %}GrandhaShare - Buy, swap or donate textbooks across Kerala{% endblock %}
 
 {% block content %}
-<section class="hero p-4 p-md-5 mb-4 text-center">
-    <h1 class="display-5 fw-bold">Buy, swap or donate textbooks across Kerala</h1>
-    <p class="lead mb-4">Find the right book for your university, course and semester.</p>
-    <form method="get" action="{% url 'listing_list' %}" class="row g-2 justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="input-group input-group-lg">
-                <input type="text" name="q" class="form-control" placeholder="Search by title, author or subject">
-                <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i> Search</button>
-            </div>
+<section class="hero-modern p-4 p-md-5 mb-4">
+    <div class="py-md-4" style="max-width: 760px;">
+        <span class="eyebrow">KERALA STUDENT BOOK COMMUNITY</span>
+        <h1 class="mt-3 mb-3">Your next semester starts with the <span class="gradient-text">right book.</span></h1>
+        <p class="lead mb-4">Buy, swap or donate textbooks. Connect with students across Kerala.</p>
+        <form method="get" action="{% url 'listing_list' %}" class="hero-search">
+           <i class="bi bi-search"></i>
+           <input type="text" name="q" placeholder="Search textbooks, authors, subjects...">
+           <button type="submit">Search</button>
+        </form>
+        <div class="d-flex flex-wrap gap-2 mt-3">
+            <a class="chip" href="{% url 'listing_list' %}?listing_type=sell">Buy books</a>
+            <a class="chip" href="{% url 'listing_list' %}?listing_type=swap">Swap books</a>
+            <a class="chip" href="{% url 'listing_list' %}?listing_type=donate">Donate books</a>
         </div>
-    </form>
-    <p class="small text-muted mt-3 mb-0">No login needed to browse. Log in only to post or request a book.</p>
-    {% if not user.is_authenticated %}
-        <a class="btn btn-warning mt-3" href="{% url 'signup' %}">Join GrandhaShare</a>
-    {% endif %}
+        <p class="small mt-3 mb-0" style="color: rgba(255,255,255,.65);">No login needed to browse. Log in only to post or request a book.</p>
+    </div>
 </section>
 
 <section class="row text-center g-3 mb-5">
