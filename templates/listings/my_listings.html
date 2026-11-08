@@ -23,8 +23,8 @@
                 <div>
                     <a href="{% url 'listing_detail' book.pk %}" class="fw-semibold text-decoration-none">{{ book.title }}</a>
                     <div class="small text-muted">
-                        Sem {{ book.semester }} &middot; {{ book.get_listing_type_display }}
-                        &middot;
+                        GS-{{ book.pk|stringformat:"05d" }} &middot;
+                        Sem {{ book.semester }} &middot; {{ book.get_listing_type_display }}&middot;
                         {% if book.status == "sold" %}
                            <span class="badge text-bg-success">
                                {% if book.listing_type == "sell" %}Sold{% elif book.listing_type == "swap" %}Swapped{% else %}Donated{% endif %}

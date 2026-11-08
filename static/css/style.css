@@ -346,3 +346,97 @@ h1, h2, h3, h4, h5, .navbar-brand {
 @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
 }
+
+/* Photo slider */
+.gs-arrow {
+    width: 42px;
+    height: 42px;
+    top: 50%;
+    bottom: auto;
+    transform: translateY(-50%);
+    margin: 0 0.6rem;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(18, 59, 54, 0.8);
+    opacity: 1;
+}
+.gs-arrow:hover { background: var(--gs-primary); }
+.thumb-btn {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: #fff;
+}
+.thumb-btn:hover { border-color: var(--gs-primary); }
+.thumb-btn img { width: 100%; height: 100%; object-fit: cover; }
+
+#photos .carousel-item { display: none; }
+#photos .carousel-item.active,
+#photos .carousel-item-next,
+#photos .carousel-item-prev { display: block; }
+#photos .carousel-item img {
+    width: 100%;
+    height: 420px;
+    object-fit: contain;
+    background: #fff;
+}
+
+/* Photo gallery */
+.gallery-main {
+    height: 380px;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(18, 59, 54, 0.08);
+    overflow: hidden;
+}
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+.gallery-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+.thumb-btn.active { border-color: var(--gs-primary); }
+
+/* Photo gallery */
+.gallery-main {
+    height: 380px;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 12px rgba(18, 59, 54, 0.08);
+    overflow: hidden;
+}
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+.gallery-thumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+}
+.thumb-btn {
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 0.6rem;
+    overflow: hidden;
+    background: #fff;
+}
+.thumb-btn:hover,
+.thumb-btn.active { border-color: var(--gs-primary); }
+.thumb-btn img { width: 100%; height: 100%; object-fit: cover; }

@@ -6,32 +6,38 @@
 <a href="{% url 'home' %}" class="text-decoration-none small">&larr; Back to books</a>
 
 <div class="row g-4 mt-1">
-    <div class="col-md-6">
+        <div class="col-md-6">
         {% if images %}
-            <div id="photos" class="carousel slide">
-                <div class="carousel-inner rounded-4 shadow-sm">
-                    {% for img in images %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <img src="{{ img.image.url }}" class="d-block w-100" style="max-height: 420px; object-fit: contain; background: #fff;" alt="{{ listing.title }}">
-                        </div>
-                    {% endfor %}
+            <div class="gallery">
+                <div class="gallery-main">
+                    <img id="galleryMain" src="{{ images.0.image.url }}" alt="{{ listing.title }}">
                 </div>
-                {% if images.count > 1 %}
-                    <button class="carousel-control-prev" type="button" data-bs-target="#photos" data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#photos" data-bs-slide="next">
-                        <span class="carousel-control-next-icon"></span>
-                    </button>
+                {% if images|length > 1 %}
+                    <div class="gallery-thumbs">
+                        {% for img in images %}
+                            <button type="button" class="thumb-btn{% if forloop.first %} active{% endif %}" data-src="{{ img.image.url }}" aria-label="Show photo {{ forloop.counter }}">
+                                <img src="{{ img.image.url }}" alt="">
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <p class="small text-muted mt-1 mb-0">{{ images|length }} photos. Tap a thumbnail to view.</p>
                 {% endif %}
             </div>
+            <script>
+            document.querySelectorAll(".thumb-btn").forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    document.getElementById("galleryMain").src = btn.dataset.src;
+                    document.querySelectorAll(".thumb-btn").forEach(function (b) { b.classList.remove("active"); });
+                    btn.classList.add("active");
+                });
+            });
+            </script>
         {% else %}
             <div class="d-flex align-items-center justify-content-center bg-white rounded-4 shadow-sm text-muted" style="height: 300px;">
                 <div class="text-center"><i class="bi bi-book fs-1"></i><p class="mb-0">No photo added</p></div>
             </div>
         {% endif %}
     </div>
-
     <div class="col-md-6">
         <h2>{{ listing.title }}</h2>
         <p class="text-muted">by {{ listing.author }}{% if listing.edition %} &middot; {{ listing.edition }} edition{% endif %}</p>
@@ -46,8 +52,10 @@
             {% else %}
                 <span class="badge text-bg-warning">{{ listing.get_status_display }}</span>
             {% endif %}
+            {% if listing.seller.username|slice:":5" == "demo_" %}<span class="badge text-bg-dark">Demo</span>{% endif %}
         </p>
         <ul class="list-unstyled">
+            <li><strong>Listing ID:</strong> GS-{{ listing.pk|stringformat:"05d" }}</li>
             <li><strong>University:</strong> {{ listing.course.university.name }}</li>
             <li><strong>Course:</strong> {{ listing.course.name }}</li>
             <li><strong>Semester:</strong> {{ listing.semester }}</li>
@@ -57,29 +65,33 @@
         {% if listing.description %}
             <p>{{ listing.description|linebreaks }}</p>
         {% endif %}
+
         {% if user == listing.seller %}
-          <div class="mb-3">
-            <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
-            <a href="{% url 'delete_listing' listing.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
-          </div>
-       {% endif %}
-       {% if user != listing.seller %}
-          <div class="mb-3">
-             {% if user_request %}
-                <span class="badge text-bg-secondary fs-6">Your request: {{ user_request.get_status_display }}</span>
-             {% elif listing.status == "available" %}
-                <a href="{% url 'request_book' listing.pk %}" class="btn btn-primary"><i class="bi bi-send"></i> Request this book</a>
-             {% else %}
-                <span class="text-muted">This book is no longer available.</span>
-             {% endif %}
-          </div>
+            <div class="mb-3">
+                <a href="{% url 'edit_listing' listing.pk %}" class="btn btn-outline-primary btn-sm">Edit</a>
+                <a href="{% url 'delete_listing' listing.pk %}" class="btn btn-outline-danger btn-sm">Delete</a>
+            </div>
         {% endif %}
+
+        {% if user != listing.seller %}
+            <div class="mb-3">
+                {% if user_request %}
+                    <span class="badge text-bg-secondary fs-6">Your request: {{ user_request.get_status_display }}</span>
+                {% elif listing.status == "available" %}
+                    <a href="{% url 'request_book' listing.pk %}" class="btn btn-primary"><i class="bi bi-send"></i> Request this book</a>
+                {% else %}
+                    <span class="text-muted">This book is no longer available.</span>
+                {% endif %}
+            </div>
+        {% endif %}
+
         <div class="alert alert-light border small">
             <i class="bi bi-shield-check"></i> Tip: meet in a public place on campus.
-            {% if user != listing.seller %}
-               <a href="{% url 'report_listing' listing.pk %}" class="text-danger small text-decoration-none"><i class="bi bi-flag"></i> Report this listing</a>
-            {% endif %}
         </div>
+
+        {% if user != listing.seller %}
+            <a href="{% url 'report_listing' listing.pk %}" class="text-danger small text-decoration-none"><i class="bi bi-flag"></i> Report this listing</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
