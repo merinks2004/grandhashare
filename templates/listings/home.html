@@ -22,14 +22,14 @@
     </div>
 </section>
 
-<section class="row text-center g-3 mb-5">
-    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.books }}</div>Books available</div></div>
-    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.universities }}</div>Universities</div></div>
-    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.courses }}</div>Courses</div></div>
-    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number">{{ stats.students }}</div>Students joined</div></div>
+<section class="row text-center g-3 mb-5 reveal">
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" data-count="{{ stats.books }}">{{ stats.books }}</div>Books available</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" data-count="{{ stats.universities }}">{{ stats.universities }}</div>Universities</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" data-count="{{ stats.courses }}">{{ stats.courses }}</div>Courses</div></div>
+    <div class="col-6 col-md-3"><div class="stat-box"><div class="stat-number" data-count="{{ stats.students }}">{{ stats.students }}</div>Students joined</div></div>
 </section>
 
-<section class="mb-5">
+<section class="mb-5 reveal">
     <h3 class="mb-3">Browse by university</h3>
     <div class="row g-3">
         {% for u in universities %}
@@ -46,7 +46,7 @@
     </div>
 </section>
 
-<section class="mb-5">
+<section class="mb-5 reveal">
     <h3 class="mb-3">Popular subjects</h3>
     <div class="row g-3">
         {% for s in subjects %}
@@ -60,7 +60,7 @@
     </div>
 </section>
 
-<section class="mb-5">
+<section class="mb-5 reveal">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">Latest books</h3>
         <a href="{% url 'listing_list' %}" class="text-decoration-none">See all &rarr;</a>
@@ -77,7 +77,7 @@
     </div>
 </section>
 
-<section class="mb-4">
+<section class="mb-4 reveal">
     <h3 class="text-center mb-4">How it works</h3>
     <div class="row g-4 text-center">
         <div class="col-md-4">
@@ -98,7 +98,7 @@
     </div>
 </section>
 
-<section class="give-banner p-4 p-md-5 mb-4">
+<section class="give-banner p-4 p-md-5 mb-4 reveal">
     <div class="row align-items-center g-3">
         <div class="col-md-8">
             <h3 class="mb-2">Give your old books a new home.</h3>
