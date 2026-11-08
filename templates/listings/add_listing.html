@@ -23,15 +23,27 @@
                 <div class="text-danger small mb-2">{{ error }}</div>
             {% endfor %}
 
-            {% if not editing %}
+            {% if editing and listing.images.all %}
             <div class="mb-3">
-                <label class="form-label" for="images">Photos (up to 4, max 2 MB each)</label>
+                <label class="form-label">Current photos (tick to remove)</label>
+                <div class="d-flex flex-wrap gap-3">
+                    {% for img in listing.images.all %}
+                        <label class="text-center small" style="cursor: pointer;">
+                            <img src="{{ img.image.url }}" alt="" style="height: 90px; border-radius: 8px; object-fit: cover;">
+                            <div><input type="checkbox" name="remove_images" value="{{ img.pk }}"> Remove</div>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label class="form-label" for="images">{% if editing %}Add more photos{% else %}Photos{% endif %} (up to 4 in total, max 2 MB each)</label>
                 <input type="file" name="images" id="images" class="form-control" accept="image/*" multiple>
                 {% if image_error %}
                     <div class="text-danger small">{{ image_error }}</div>
                 {% endif %}
             </div>
-            {% endif %}
 
             <button type="submit" class="btn btn-primary">{% if editing %}Save changes{% else %}Post book{% endif %}</button>
         </form>
