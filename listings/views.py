@@ -196,3 +196,19 @@ def reopen_listing(request, pk):
         listing.save()
         messages.success(request, "The book is available again.")
     return redirect("my_listings")
+
+
+def about(request):
+    return render(request, "pages/about.html")
+
+
+def contact(request):
+    return render(request, "pages/contact.html")
+
+
+def privacy(request):
+    return render(request, "pages/privacy.html")
+
+
+def terms(request):
+    return render(request, "pages/terms.html")

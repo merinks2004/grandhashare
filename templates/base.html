@@ -69,8 +69,8 @@
                 <div class="col-lg-4">
                     <h5 class="text-white"><i class="bi bi-book-half me-2"></i>GrandhaShare</h5>
                     <p class="small">A student-built platform where Kerala college students buy, swap or donate used textbooks, organised by university, course and semester.</p>
-                    <a class="social-link" href="https://github.com/YOUR-USERNAME" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
-                    <a class="social-link" href="https://www.linkedin.com/in/YOUR-PROFILE" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <a class="social-link" href="https://github.com/merinks2004" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
+                    <a class="social-link" href="https://linkedin.com/in/merin-k-s-495b37240" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
                 </div>
                 <div class="col-6 col-lg-2">
                     <h6>Explore</h6>
@@ -78,6 +78,8 @@
                         <li><a href="{% url 'listing_list' %}">Browse books</a></li>
                         <li><a href="{% url 'add_listing' %}">Add a book</a></li>
                         <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'about' %}">About</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
                     </ul>
                 </div>
                 <div class="col-6 col-lg-2">
@@ -100,7 +102,7 @@
         </div>
         <div class="footer-bottom">
             <div class="container py-3 d-flex flex-column flex-md-row justify-content-between small">
-                <span>&copy; 2026 GrandhaShare. All rights reserved.</span>
+                <span>&copy; 2026 GrandhaShare. All rights reserved. &middot; <a href="{% url 'privacy' %}" class="text-decoration-none">Privacy</a> &middot; <a href="{% url 'terms' %}" class="text-decoration-none">Terms</a></span>
                 <span>Made with <i class="bi bi-heart-fill text-warning"></i> in Kerala</span>
             </div>
         </div>

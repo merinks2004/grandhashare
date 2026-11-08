@@ -12,4 +12,8 @@ urlpatterns = [
     path("books/<int:pk>/delete/", views.delete_listing, name="delete_listing"),
     path("books/<int:pk>/complete/", views.complete_listing, name="complete_listing"),
     path("books/<int:pk>/reopen/", views.reopen_listing, name="reopen_listing"),
+    path("about/", views.about, name="about"),
+    path("contact/", views.contact, name="contact"),
+    path("privacy/", views.privacy, name="privacy"),
+    path("terms/", views.terms, name="terms"),
 ]
