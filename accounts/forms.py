@@ -1,3 +1,4 @@
+import re
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.models import User
@@ -30,10 +31,18 @@ class SignupForm(UserCreationForm):
                 field.widget.attrs["class"] = "form-control"
 
     def clean_email(self):
-        email = self.cleaned_data["email"]
+        email = self.cleaned_data["email"].strip().lower()
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already registered.")
         return email
+
+    def clean_phone(self):
+        phone = re.sub(r"[\s\-]", "", self.cleaned_data["phone"])
+        if phone.startswith("+91"):
+            phone = phone[3:]
+        if not re.fullmatch(r"[6-9]\d{9}", phone):
+            raise forms.ValidationError("Enter a valid 10-digit Indian mobile number.")
+        return phone
 
     def save(self, commit=True):
         user = super().save(commit=commit)
