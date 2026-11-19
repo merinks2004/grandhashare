@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'accounts',
     'listings',
     'exchanges',
+    'rest_framework',
+    'django_filters',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -139,3 +142,16 @@ LOGOUT_REDIRECT_URL = "/"
 from django.contrib.messages import constants as message_constants
 
 MESSAGE_TAGS = {message_constants.ERROR: "danger"}
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 9,
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'GrandhaShare API',
+    'DESCRIPTION': 'API for Kerala college students to buy, swap or donate used textbooks.',
+    'VERSION': '1.0.0',
+}
