@@ -23,6 +23,17 @@
                 <div class="text-danger small mb-2">{{ error }}</div>
             {% endfor %}
 
+            <div class="mb-3">
+                <button type="button" id="ai-suggest-btn" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-stars"></i> Suggest description with AI
+                </button>
+                <span id="ai-status" class="small ms-2" role="status"></span>
+                <div class="form-text">
+                    Uses only the title, author, edition, subject, course and condition.
+                    The result is an AI-generated suggestion. Please check and edit it before posting.
+                </div>
+            </div>
+
             {% if editing and listing.images.all %}
             <div class="mb-3">
                 <label class="form-label">Current photos (tick to remove)</label>
@@ -49,4 +60,78 @@
         </form>
     </div>
 </div>
+
+<script>
+(function () {
+    const btn = document.getElementById("ai-suggest-btn");
+    const status = document.getElementById("ai-status");
+    const form = btn.closest("form");
+
+    function value(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : "";
+    }
+
+    function setStatus(text, isError) {
+        status.textContent = text;
+        status.className = "small ms-2 " + (isError ? "text-danger" : "text-muted");
+    }
+
+    btn.addEventListener("click", async function () {
+        const courseSelect = document.getElementById("id_course");
+        const courseName = courseSelect && courseSelect.value
+            ? courseSelect.options[courseSelect.selectedIndex].text.slice(0, 150)
+            : "";
+
+        const payload = {
+            title: value("id_title"),
+            author: value("id_author"),
+            edition: value("id_edition"),
+            subject: value("id_subject"),
+            condition: value("id_condition"),
+            course_name: courseName,
+        };
+
+        if (!payload.title || !payload.author || !payload.subject || !payload.condition) {
+            setStatus("Please fill in title, author, subject and condition first.", true);
+            return;
+        }
+
+        const box = document.getElementById("id_description");
+        if (box.value.trim() && !confirm("Replace the current description with an AI suggestion?")) {
+            return;
+        }
+
+        btn.disabled = true;
+        setStatus("Writing a suggestion...", false);
+
+        try {
+            const response = await fetch("/api/ai/description/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value,
+                },
+                body: JSON.stringify(payload),
+            });
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                box.value = data.description;
+                setStatus("AI-generated suggestion added. Please check and edit it.", false);
+            } else if (response.status === 429) {
+                setStatus("Too many AI requests. Please try again later.", true);
+            } else if (response.status === 503) {
+                setStatus("AI is not available right now. You can write the description yourself.", true);
+            } else {
+                setStatus("Could not get a suggestion. Please check the book details.", true);
+            }
+        } catch (err) {
+            setStatus("Network problem. Please try again.", true);
+        } finally {
+            btn.disabled = false;
+        }
+    });
+})();
+</script>
 {% endblock %}
