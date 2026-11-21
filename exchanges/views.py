@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.db import transaction
 
 from listings.models import Listing
 
@@ -61,34 +62,33 @@ def my_requests(request):
 @login_required
 @require_POST
 def respond_request(request, pk):
-    book_request = get_object_or_404(
-        BookRequest.objects.select_related("listing"),
-        pk=pk,
-        listing__seller=request.user,
-    )
+    # 404 unless the logged-in user is the seller of this listing
+    get_object_or_404(BookRequest, pk=pk, listing__seller=request.user)
     action = request.POST.get("action")
 
-    if book_request.status != "pending":
-        messages.info(request, "You have already answered this request.")
-    elif action == "accept":
-        if book_request.listing.status != "available":
-            messages.error(request, "This book is already reserved or sold.")
-        else:
-            book_request.status = "accepted"
+    with transaction.atomic():
+        book_request = BookRequest.objects.select_for_update().get(pk=pk)
+        listing = Listing.objects.select_for_update().get(pk=book_request.listing_id)
+
+        if book_request.status != "pending":
+            messages.info(request, "You have already answered this request.")
+        elif action == "accept":
+            if listing.status != "available":
+                messages.error(request, "This book is already reserved or sold.")
+            else:
+                book_request.status = "accepted"
+                book_request.save()
+                listing.status = "reserved"
+                listing.save()
+                messages.success(request, "Request accepted. The book is now reserved.")
+        elif action == "reject":
+            book_request.status = "rejected"
             book_request.save()
-            book_request.listing.status = "reserved"
-            book_request.listing.save()
-            messages.success(request, "Request accepted. The book is now reserved.")
-    elif action == "reject":
-        book_request.status = "rejected"
-        book_request.save()
-        messages.success(request, "Request rejected.")
-    else:
-        messages.error(request, "Invalid action.")
+            messages.success(request, "Request rejected.")
+        else:
+            messages.error(request, "Invalid action.")
 
     return redirect("requests_received")
-
-
 
 @login_required
 def report_listing(request, pk):
