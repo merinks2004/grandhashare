@@ -56,6 +56,28 @@
                 {% endif %}
             </div>
 
+            <div class="border rounded-3 p-3 mb-3 bg-white">
+                <div class="fw-semibold mb-2"><i class="bi bi-camera"></i> Check condition with AI (optional)</div>
+                <div class="row g-2 align-items-end">
+                    <div class="col-sm-5">
+                        <label class="form-label small mb-1" for="ai-original-price">Original price in ₹ (optional)</label>
+                        <input type="number" min="1" step="1" id="ai-original-price" class="form-control form-control-sm" placeholder="e.g. 400">
+                    </div>
+                    <div class="col-sm-7">
+                        <button type="button" id="ai-condition-btn" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-stars"></i> Check condition with AI
+                        </button>
+                        <span id="ai-condition-status" class="small ms-2" role="status"></span>
+                    </div>
+                </div>
+                <div id="ai-condition-result" class="mt-3 small"></div>
+                <div class="form-text">
+                    Photograph only the book. Please avoid faces, names and phone numbers.
+                    Photos are sent to Google's Gemini service. The result is an AI estimate from photos only,
+                    so please check it. The price range is a rule of thumb, not market data.
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary">{% if editing %}Save changes{% else %}Post book{% endif %}</button>
         </form>
     </div>
@@ -63,19 +85,22 @@
 
 <script>
 (function () {
-    const btn = document.getElementById("ai-suggest-btn");
-    const status = document.getElementById("ai-status");
-    const form = btn.closest("form");
+    const form = document.getElementById("ai-suggest-btn").closest("form");
+    const csrf = form.querySelector("[name=csrfmiddlewaretoken]").value;
 
     function value(id) {
         const el = document.getElementById(id);
         return el ? el.value.trim() : "";
     }
 
-    function setStatus(text, isError) {
-        status.textContent = text;
-        status.className = "small ms-2 " + (isError ? "text-danger" : "text-muted");
+    function setText(el, text, isError) {
+        el.textContent = text;
+        el.className = "small ms-2 " + (isError ? "text-danger" : "text-muted");
     }
+
+    /* ---------- Description writer ---------- */
+    const btn = document.getElementById("ai-suggest-btn");
+    const status = document.getElementById("ai-status");
 
     btn.addEventListener("click", async function () {
         const courseSelect = document.getElementById("id_course");
@@ -93,7 +118,7 @@
         };
 
         if (!payload.title || !payload.author || !payload.subject || !payload.condition) {
-            setStatus("Please fill in title, author, subject and condition first.", true);
+            setText(status, "Please fill in title, author, subject and condition first.", true);
             return;
         }
 
@@ -103,33 +128,160 @@
         }
 
         btn.disabled = true;
-        setStatus("Writing a suggestion...", false);
+        setText(status, "Writing a suggestion...", false);
 
         try {
             const response = await fetch("/api/ai/description/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": form.querySelector("[name=csrfmiddlewaretoken]").value,
-                },
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
                 body: JSON.stringify(payload),
             });
             const data = await response.json().catch(() => ({}));
 
             if (response.ok) {
                 box.value = data.description;
-                setStatus("AI-generated suggestion added. Please check and edit it.", false);
+                setText(status, "AI-generated suggestion added. Please check and edit it.", false);
             } else if (response.status === 429) {
-                setStatus("Too many AI requests. Please try again later.", true);
+                setText(status, "Too many AI requests. Please try again later.", true);
             } else if (response.status === 503) {
-                setStatus("AI is not available right now. You can write the description yourself.", true);
+                setText(status, "AI is not available right now. You can write the description yourself.", true);
             } else {
-                setStatus("Could not get a suggestion. Please check the book details.", true);
+                setText(status, "Could not get a suggestion. Please check the book details.", true);
             }
         } catch (err) {
-            setStatus("Network problem. Please try again.", true);
+            setText(status, "Network problem. Please try again.", true);
         } finally {
             btn.disabled = false;
+        }
+    });
+
+    /* ---------- Condition and price estimator ---------- */
+    const cBtn = document.getElementById("ai-condition-btn");
+    const cStatus = document.getElementById("ai-condition-status");
+    const cResult = document.getElementById("ai-condition-result");
+    const fileInput = document.getElementById("images");
+    const MAX_BYTES = 2 * 1024 * 1024;
+    const OK_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
+    function addLine(parent, text, className) {
+        const p = document.createElement("div");
+        p.className = className || "";
+        p.textContent = text;   // textContent, never innerHTML
+        parent.appendChild(p);
+        return p;
+    }
+
+    function addApplyButton(parent, label, onClick) {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "btn btn-sm btn-outline-secondary me-2 mt-2";
+        b.textContent = label;
+        b.addEventListener("click", onClick);
+        parent.appendChild(b);
+    }
+
+    function showResult(data) {
+        cResult.replaceChildren();
+        addLine(cResult, "Suggested condition: " + data.condition_label, "fw-semibold");
+
+        if (data.issues && data.issues.length) {
+            addLine(cResult, "Visible issues:");
+            const ul = document.createElement("ul");
+            ul.className = "mb-1";
+            data.issues.forEach(function (issue) {
+                const li = document.createElement("li");
+                li.textContent = issue;
+                ul.appendChild(li);
+            });
+            cResult.appendChild(ul);
+        } else {
+            addLine(cResult, "No visible problems were found in the photos.");
+        }
+
+        addApplyButton(cResult, "Use this condition", function () {
+            document.getElementById("id_condition").value = data.suggested_condition;
+            setText(cStatus, "Condition filled in. Please check it.", false);
+        });
+
+        if (data.price_range) {
+            addLine(cResult,
+                "Price range: ₹" + data.price_range.low + " to ₹" + data.price_range.high +
+                " (" + data.price_note + ")", "mt-2");
+            addApplyButton(cResult, "Use middle price", function () {
+                if (document.getElementById("id_listing_type").value !== "sell") {
+                    setText(cStatus, "Price is only used for books you sell.", true);
+                    return;
+                }
+                document.getElementById("id_price").value =
+                    Math.round((data.price_range.low + data.price_range.high) / 2);
+                setText(cStatus, "Price filled in. Please check it.", false);
+            });
+        }
+        addLine(cResult, data.note, "text-muted mt-2");
+    }
+
+    cBtn.addEventListener("click", async function () {
+        cResult.replaceChildren();
+        const title = value("id_title");
+        const author = value("id_author");
+        const files = Array.from(fileInput.files);
+
+        if (!title || !author) {
+            setText(cStatus, "Please fill in title and author first.", true);
+            return;
+        }
+        if (files.length === 0) {
+            setText(cStatus, "Please choose 1 to 4 photos above first.", true);
+            return;
+        }
+        if (files.length > 4) {
+            setText(cStatus, "Please choose at most 4 photos.", true);
+            return;
+        }
+        for (const f of files) {
+            if (OK_TYPES.indexOf(f.type) === -1) {
+                setText(cStatus, "Use JPEG, PNG or WebP photos.", true);
+                return;
+            }
+            if (f.size > MAX_BYTES) {
+                setText(cStatus, "Each photo must be 2 MB or smaller.", true);
+                return;
+            }
+        }
+
+        const fd = new FormData();
+        fd.append("title", title);
+        fd.append("author", author);
+        const original = value("ai-original-price");
+        if (original) { fd.append("original_price", original); }
+        files.forEach(function (f) { fd.append("images", f); });
+
+        cBtn.disabled = true;
+        setText(cStatus, "Checking the photos...", false);
+
+        try {
+            // No Content-Type header: the browser adds the multipart boundary.
+            const response = await fetch("/api/ai/estimate/", {
+                method: "POST",
+                headers: { "X-CSRFToken": csrf },
+                body: fd,
+            });
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok) {
+                setText(cStatus, "Done.", false);
+                showResult(data);
+            } else if (response.status === 429) {
+                setText(cStatus, "Too many AI requests. Please try again later.", true);
+            } else if (response.status === 503) {
+                setText(cStatus, "AI is not available right now. You can choose the condition yourself.", true);
+            } else {
+                setText(cStatus, "Could not check the photos. Please check the details.", true);
+            }
+        } catch (err) {
+            setText(cStatus, "Network problem. Please try again.", true);
+        } finally {
+            cBtn.disabled = false;
         }
     });
 })();
