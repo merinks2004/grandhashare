@@ -166,6 +166,7 @@ REST_FRAMEWORK = {
         'user': '1000/hour',
         'login': '10/minute',
         'ai': '10/hour',
+        'ai_vision': '5/hour',
     },
 }
 
