@@ -1,0 +1,9 @@
+{% if email_unverified %}
+<div class="alert alert-warning d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3" role="alert">
+    <span><i class="bi bi-envelope"></i> Please verify your email to post books or send requests. We sent a link to {{ user.email }}.</span>
+    <form method="post" action="{% url 'resend_verification' %}" class="m-0">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-dark">Send the link again</button>
+    </form>
+</div>
+{% endif %}

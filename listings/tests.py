@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import Course, Listing, University
+from accounts.testing import make_verified
 
 
 def make_listing(seller, course, **extra):
@@ -20,6 +21,8 @@ class ListingAPITests(APITestCase):
     def setUp(self):
         self.alice = User.objects.create_user("alice", password="pass12345")
         self.bob = User.objects.create_user("bob", password="pass12345")
+        make_verified(self.alice)
+        make_verified(self.bob)
         uni = University.objects.create(name="Test University")
         self.course = Course.objects.create(name="B.Tech CSE", university=uni)
         self.listing = make_listing(self.alice, self.course)

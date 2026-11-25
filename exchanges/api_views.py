@@ -13,6 +13,7 @@ from listings.models import Listing
 from .emails import notify_new_request, notify_request_answered
 from .models import BookRequest
 from .serializers import BookRequestSerializer
+from accounts.permissions import VerifiedEmailForCreate
 
 
 class BookRequestViewSet(
@@ -22,7 +23,7 @@ class BookRequestViewSet(
     viewsets.GenericViewSet,
 ):
     serializer_class = BookRequestSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, VerifiedEmailForCreate]
 
     def get_queryset(self):
         user = self.request.user

@@ -16,6 +16,10 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
+    # Email verification ("resend" must come before the token pattern)
+    path("verify/resend/", views.resend_verification, name="resend_verification"),
+    path("verify/<str:token>/", views.verify_email, name="verify_email"),
+
     # Forgot password (Django's built-in views, our templates)
     path(
         "password-reset/",

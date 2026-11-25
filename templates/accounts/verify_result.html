@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Email verification - GrandhaShare{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        {% if ok %}
+            <h2 class="mb-3">Email verified</h2>
+            <p>Thank you! Your email address is confirmed. You can now post books and send requests.</p>
+            <a href="{% url 'listing_list' %}" class="btn btn-primary">Browse books</a>
+        {% else %}
+            <h2 class="mb-3">This link does not work</h2>
+            <p>The verification link is invalid or has expired. Links work for 24 hours. Log in and use "Send the link again" to get a new one.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary">Log in</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

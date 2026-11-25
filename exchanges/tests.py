@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 from listings.models import Course, Listing, University
 
 from .models import BookRequest
+from accounts.testing import make_verified
 
 
 class RequestAPITests(APITestCase):
@@ -13,6 +14,9 @@ class RequestAPITests(APITestCase):
         self.alice = User.objects.create_user("alice", password="pass12345")  # seller
         self.bob = User.objects.create_user("bob", password="pass12345")      # buyer
         self.carol = User.objects.create_user("carol", password="pass12345")  # stranger
+        make_verified(self.alice)
+        make_verified(self.bob)
+        make_verified(self.carol)
         uni = University.objects.create(name="Test University")
         course = Course.objects.create(name="B.Tech CSE", university=uni)
         self.listing = Listing.objects.create(

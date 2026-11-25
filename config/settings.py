@@ -73,6 +73,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'exchanges.context_processors.pending_requests',
+                'accounts.context_processors.email_verification',
             ],
         },
     },

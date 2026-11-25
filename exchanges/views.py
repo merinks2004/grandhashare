@@ -11,9 +11,11 @@ from listings.models import Listing
 from .emails import notify_new_request, notify_request_answered
 from .forms import ReportForm, RequestForm
 from .models import BookRequest, Report
+from accounts.decorators import email_verified_required
 
 
 @login_required
+@email_verified_required
 def request_book(request, pk):
     listing = get_object_or_404(Listing, pk=pk)
 

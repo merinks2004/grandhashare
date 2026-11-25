@@ -17,6 +17,7 @@ class Profile(models.Model):
         Course, on_delete=models.SET_NULL, null=True, blank=True
     )
     semester = models.PositiveSmallIntegerField(null=True, blank=True)
+    email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Profile of {self.user.username}"

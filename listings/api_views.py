@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from .models import Course, Listing, University
 from .permissions import IsOwnerOrReadOnly
 from .serializers import CourseSerializer, ListingSerializer, UniversitySerializer
+from accounts.permissions import VerifiedEmailForCreate
 
 
 class ListingFilter(django_filters.FilterSet):
@@ -36,7 +37,7 @@ class ListingViewSet(viewsets.ModelViewSet):
         .prefetch_related("images")
     )
     serializer_class = ListingSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly, VerifiedEmailForCreate]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ListingFilter
     search_fields = ["title", "author", "subject"]

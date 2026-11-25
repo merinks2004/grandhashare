@@ -6,12 +6,14 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from listings.models import Course, Listing, University
-
+from accounts.testing import make_verified
 
 class EmailTests(APITestCase):
     def setUp(self):
         self.alice = User.objects.create_user("alice", "alice@example.com", "pass12345")
         self.bob = User.objects.create_user("bob", "bob@example.com", "pass12345")
+        make_verified(self.alice)
+        make_verified(self.bob)
         uni = University.objects.create(name="Test University")
         course = Course.objects.create(name="B.Tech CSE", university=uni)
         self.listing = Listing.objects.create(
