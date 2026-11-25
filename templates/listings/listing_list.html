@@ -5,6 +5,29 @@
 {% block content %}
 <h2 class="mb-3">Browse books</h2>
 
+{% if user.is_authenticated %}
+<form id="smart-search-form" class="card card-body border-0 shadow-sm mb-3">
+    {% csrf_token %}
+    <label class="form-label small mb-1" for="smart-search-input">
+        <i class="bi bi-stars"></i> Smart search (AI)
+    </label>
+    <div class="input-group">
+        <input type="text" id="smart-search-input" class="form-control" maxlength="200"
+               placeholder="e.g. data structures book for 3rd sem under 300">
+        <button type="submit" id="smart-search-btn" class="btn btn-outline-primary">Find</button>
+    </div>
+    <div id="smart-search-status" class="small mt-2 text-muted" role="status"></div>
+    <div class="form-text">
+        AI turns your sentence into the filters below. Your text is sent to Google's Gemini service,
+        so please don't type personal information. Check the filters it fills in.
+    </div>
+</form>
+{% else %}
+<p class="text-muted small mb-3">
+    <i class="bi bi-stars"></i> Log in to try AI smart search: type a sentence instead of using filters.
+</p>
+{% endif %}
+
 <form method="get" class="card card-body border-0 shadow-sm mb-4">
     <div class="row g-2">
         {% for field in form %}
@@ -51,5 +74,64 @@
         {% endif %}
     </ul>
 </nav>
+{% endif %}
+
+{% if user.is_authenticated %}
+<script>
+(function () {
+    const form = document.getElementById("smart-search-form");
+    const input = document.getElementById("smart-search-input");
+    const btn = document.getElementById("smart-search-btn");
+    const status = document.getElementById("smart-search-status");
+    const csrf = form.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    function setStatus(text, isError) {
+        status.textContent = text;
+        status.className = "small mt-2 " + (isError ? "text-danger" : "text-muted");
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const query = input.value.trim();
+        if (!query) {
+            setStatus("Type what you are looking for first.", true);
+            return;
+        }
+
+        btn.disabled = true;
+        setStatus("Understanding your search...", false);
+
+        try {
+            const response = await fetch("/api/ai/search/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+                body: JSON.stringify({ query: query }),
+            });
+            const data = await response.json().catch(() => ({}));
+
+            // Only ever go to a Browse address on this site.
+            if (response.ok && typeof data.url === "string" && data.url.startsWith("/books/?")) {
+                setStatus(data.summary || "Searching...", false);
+                window.location.href = data.url;
+                return;
+            }
+            if (response.status === 422 && data.detail) {
+                setStatus(data.detail, true);
+            } else if (response.status === 429) {
+                setStatus("Too many AI searches. Please try again later or use the filters.", true);
+            } else if (response.status === 503) {
+                setStatus("AI search is not available right now. Please use the filters below.", true);
+            } else if (response.status === 401 || response.status === 403) {
+                setStatus("Please log in again to use AI search.", true);
+            } else {
+                setStatus("Could not understand that. Please try other words or use the filters.", true);
+            }
+        } catch (err) {
+            setStatus("Network problem. Please try again.", true);
+        }
+        btn.disabled = false;
+    });
+})();
+</script>
 {% endif %}
 {% endblock %}
