@@ -163,6 +163,7 @@ REST_FRAMEWORK = {
         'login': '10/minute',
         'ai': '10/hour',
         'ai_vision': '5/hour',
+        'ai_search': '20/hour',
     },
 }
 

@@ -2,6 +2,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 
 from .ai_condition_views import ConditionEstimateView
+from .ai_search_views import SmartSearchView
 from .ai_views import DescriptionSuggestView
 from .api_views import CourseViewSet, ListingViewSet, UniversityViewSet
 
@@ -13,4 +14,5 @@ router.register("listings", ListingViewSet)
 urlpatterns = [
     path("ai/description/", DescriptionSuggestView.as_view(), name="ai-description"),
     path("ai/estimate/", ConditionEstimateView.as_view(), name="ai-estimate"),
+    path("ai/search/", SmartSearchView.as_view(), name="ai-search"),
 ] + router.urls
