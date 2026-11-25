@@ -1,13 +1,16 @@
+from functools import partial
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
 from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from listings.models import Listing
 
+from .emails import notify_new_request, notify_request_answered
 from .forms import ReportForm, RequestForm
 from .models import BookRequest, Report
-from django.views.decorators.http import require_POST
 
 
 @login_required
@@ -33,6 +36,7 @@ def request_book(request, pk):
             book_request.listing = listing
             book_request.requester = request.user
             book_request.save()
+            transaction.on_commit(partial(notify_new_request, book_request))
             messages.success(request, "Request sent! The seller will review it.")
             return redirect("listing_detail", pk=pk)
     else:
@@ -42,6 +46,7 @@ def request_book(request, pk):
         request, "exchanges/request_book.html",
         {"form": form, "listing": listing},
     )
+
 
 @login_required
 def requests_received(request):
@@ -80,15 +85,18 @@ def respond_request(request, pk):
                 book_request.save()
                 listing.status = "reserved"
                 listing.save()
+                transaction.on_commit(partial(notify_request_answered, book_request))
                 messages.success(request, "Request accepted. The book is now reserved.")
         elif action == "reject":
             book_request.status = "rejected"
             book_request.save()
+            transaction.on_commit(partial(notify_request_answered, book_request))
             messages.success(request, "Request rejected.")
         else:
             messages.error(request, "Invalid action.")
 
     return redirect("requests_received")
+
 
 @login_required
 def report_listing(request, pk):
@@ -118,4 +126,3 @@ def report_listing(request, pk):
         request, "exchanges/report_listing.html",
         {"form": form, "listing": listing},
     )
-

@@ -1,6 +1,8 @@
+from functools import partial
+
 from django.db import transaction
-from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -8,6 +10,7 @@ from rest_framework.response import Response
 
 from listings.models import Listing
 
+from .emails import notify_new_request, notify_request_answered
 from .models import BookRequest
 from .serializers import BookRequestSerializer
 
@@ -29,7 +32,8 @@ class BookRequestViewSet(
         )
 
     def perform_create(self, serializer):
-        serializer.save(requester=self.request.user)
+        book_request = serializer.save(requester=self.request.user)
+        transaction.on_commit(partial(notify_new_request, book_request))
 
     def _respond(self, request, pk, new_status):
         # Only the seller of the listing can reach this object (else 404).
@@ -52,6 +56,7 @@ class BookRequestViewSet(
 
             book_request.status = new_status
             book_request.save()
+            transaction.on_commit(partial(notify_request_answered, book_request))
 
         book_request = self.get_queryset().get(pk=pk)
         return Response(self.get_serializer(book_request).data)

@@ -133,11 +133,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 LOGIN_URL = "login"
@@ -180,3 +176,33 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API for Kerala college students to buy, swap or donate used textbooks.',
     'VERSION': '1.0.0',
 }
+
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "GrandhaShare <noreply@grandhashare.local>"
+)
+SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
+
+if os.environ.get("SMTP_USER") and os.environ.get("SMTP_PASSWORD"):
+    MAILERS = {
+        "default": {
+            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            "OPTIONS": {
+                "host": os.environ.get("SMTP_HOST", "smtp.gmail.com"),
+                "port": int(os.environ.get("SMTP_PORT", "587")),
+                "use_tls": True,
+                "username": os.environ["SMTP_USER"],
+                "password": os.environ["SMTP_PASSWORD"],
+            },
+        },
+    }
+else:
+    # No credentials in .env: print emails in the terminal (safe for development).
+    MAILERS = {
+        "default": {"BACKEND": "django.core.mail.backends.console.EmailBackend"},
+    }
+
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL", "GrandhaShare <noreply@grandhashare.local>"
+)
+SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
