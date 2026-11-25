@@ -207,3 +207,5 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     "DEFAULT_FROM_EMAIL", "GrandhaShare <noreply@grandhashare.local>"
 )
 SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
+
+PASSWORD_RESET_TIMEOUT = 60 * 60  # reset links work for 1 hour
