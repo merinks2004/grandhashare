@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 
 from .forms import ListingFilterForm, ListingForm
 from .models import BookImage, Course, Listing, University
+from accounts.decorators import email_verified_required
 
 MAX_IMAGES = 4
 MAX_IMAGE_SIZE = 2 * 1024 * 1024  # 2 MB
@@ -91,6 +92,7 @@ def listing_list(request):
 
 
 @login_required
+@email_verified_required
 def add_listing(request):
     image_error = None
     if request.method == "POST":
