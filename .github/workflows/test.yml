@@ -26,3 +26,5 @@ jobs:
 
       - name: Run tests
         run: python manage.py test
+    env:
+      SECRET_KEY: ci-only-throwaway-key-not-a-real-secret
