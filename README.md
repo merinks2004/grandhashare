@@ -3,8 +3,7 @@
 **Buy, swap or donate used textbooks, organised by Kerala university, course and semester.**
 
 **Live demo:** https://merinks.pythonanywhere.com  
-![Tests](https://github.com/merinks2004/grandhashare/actions/workflows/tests.yml/badge.svg)
-
+[![Tests](https://github.com/merinks2004/grandhashare/actions/workflows/test.yml/badge.svg)](https://github.com/merinks2004/grandhashare/actions/workflows/test.yml)
 ![Home page](docs/screenshots/home.png)
 
 > The live site contains **demo data** (labelled "Demo" on each book). It has no real users yet.
