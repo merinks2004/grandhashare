@@ -125,4 +125,4 @@ Demo book covers are generated with Pillow (no publisher cover images). Icons: B
 ## Author
 
 **Merin K S**, Python Full-Stack with AI fresher, Kerala  
-GitHub: https://github.com/merinks2004 · LinkedIn: **REPLACE with your LinkedIn link** · Email: **REPLACE with your email**
+GitHub: https://github.com/merinks2004 · LinkedIn: https://www.linkedin.com/in/merin-k-s-495b37240/  · Email: merinbt85@gmail.com
